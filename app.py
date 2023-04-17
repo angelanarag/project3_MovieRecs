@@ -45,6 +45,8 @@ def get_movies():
     conn.close()
 
     # Return the results as JSON
+    response=jsonify(result)
+    response.headers.add("Access-Control-Allow-Origin", "*")
     return jsonify(result)
 
 if __name__ == '__main__':

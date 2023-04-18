@@ -1,7 +1,33 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, send_from_directory, render_template, request
 import sqlite3
+import os
 
 app = Flask(__name__)
+@app.route('/')
+def home():
+    #return send_from_directory(os.path.abspath(os.path.dirname(__file__)), 'index.html')
+    return render_template("index.html")
+
+@app.route('/grace')
+def directors():
+    return render_template("directors.html")
+
+@app.route('/angela')
+def certification():
+    return render_template("certification.html")
+
+@app.route('/darya')
+def revenue():
+    return render_template("revenue.html")
+
+@app.route('/crisaldry')
+def language():
+    return render_template("language.html")
+
+@app.route('/miguel')
+def genre():
+    return render_template("genre.html")
+
 
 @app.route('/api/movies')
 def get_movies():
@@ -38,16 +64,48 @@ def get_movies():
             'runtime': row[13],
             'movie_popularity': row[14]
         })
-        
-        # id,title,genre,language,release_date,budget,revenue,rating,vote_count
+                
 
     # Close the connection
     conn.close()
 
-    # Return the results as JSON
+    # Return the results as JSON    
     response=jsonify(result)
     response.headers.add("Access-Control-Allow-Origin", "*")
-    return jsonify(result)
+    return response
+
+#My addition
+
+@app.route('/api/directors')
+def get_directors():
+    # Establish a connection to the database
+    conn = sqlite3.connect('movies.db')
+
+    # Create a cursor object
+    c = conn.cursor()
+
+    # Execute a SELECT statement on the movies table    
+    c.execute('SELECT title, director, revenue FROM movies')
+
+    # Fetch all the rows in the result set
+    rows = c.fetchall()
+
+    # Convert the results to a list of dictionaries
+    result = []
+    for row in rows:
+        result.append({
+            'title': row[0],
+            'director': row[1],
+            'revenue': row[2]
+        })
+
+    # Close the connection
+    conn.close()
+
+    # Return the results as JSON    
+    response=jsonify(result)
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
